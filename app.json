@@ -24,9 +24,25 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "experiments": {
       "baseUrl": "/goit-react-hw-"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2c3476a2-228d-48f8-b488-61334f68f9c0"
+      }
+    },
+    "owner": "999ralex999",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2c3476a2-228d-48f8-b488-61334f68f9c0"
     }
   }
 }
