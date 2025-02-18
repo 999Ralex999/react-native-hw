@@ -28,7 +28,7 @@ const RegistrationScreen = ({ onHasAccount }) => {
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const handlePhotoUpload = useCallback(async () => {
-    const newPhoto = "new-photo-path.jpg"; // Здесь должна быть логика загрузки фото
+    const newPhoto = "new-photo-path.jpg";
     setPhoto(newPhoto);
     console.log("Uploaded photo:", newPhoto);
   }, []);
