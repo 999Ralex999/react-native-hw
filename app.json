@@ -27,6 +27,7 @@
     "platforms": ["ios", "android", "web"],
     "experiments": {
       "baseUrl": "/goit-react-hw-"
-    }
+    },
+    "plugins": ["expo-font"]
   }
 }
