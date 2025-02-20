@@ -60,10 +60,6 @@ const RegistrationScreen = ({ navigation }) => {
     navigation.navigate("Login");
   }, [navigation]);
 
-  // const onSignUp = useCallback(() => {
-  //   navigation.navigate("Login");
-  // }, []);
-
   const passwordToggleButton = (
     <TouchableOpacity onPress={togglePasswordVisibility}>
       <Text style={[styles.baseText, styles.passwordButtonText]}>
