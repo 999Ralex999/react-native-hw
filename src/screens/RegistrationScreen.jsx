@@ -13,37 +13,36 @@ import {
 } from "react-native";
 
 import { colors } from "../../styles/global";
-
 import Input from "../components/Input";
 import Button from "../components/Button";
-import CirclePlusSvg from "../../assets/icons/CirclePlusSvg";
+import { CirclePlusSvg } from "../../assets/icons";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("screen");
 
-const RegistrationScreen = ({ onHasAccount }) => {
-  const [photo, setPhoto] = useState("");
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const RegistrationScreen = ({ navigation }) => {
+  const [state, setState] = useState({
+    login: "",
+    email: "",
+    password: "",
+    photo: "",
+  });
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
   const handlePhotoUpload = useCallback(async () => {
-    const newPhoto = "new-photo-path.jpg";
-    setPhoto(newPhoto);
-    console.log("Uploaded photo:", newPhoto);
+    console.log("Upload photo");
   }, []);
 
   const handleLoginChange = useCallback((value) => {
-    setLogin(value);
+    setState((prev) => ({ ...prev, login: value }));
   }, []);
 
   const handleEmailChange = useCallback((value) => {
-    setEmail(value);
+    setState((prev) => ({ ...prev, email: value }));
   }, []);
 
   const handlePasswordChange = useCallback((value) => {
     if (value.length <= 20) {
-      setPassword(value);
+      setState((prev) => ({ ...prev, password: value }));
     }
   }, []);
 
@@ -53,12 +52,12 @@ const RegistrationScreen = ({ onHasAccount }) => {
 
   const onRegister = useCallback(async () => {
     console.log("register");
-    console.log({ login, email, password, photo });
-  }, [login, email, password, photo]);
+    console.log(state);
+  }, [state]);
 
   const onSignUp = useCallback(() => {
-    onHasAccount();
-  }, [onHasAccount]);
+    navigation.navigate("Login");
+  }, []);
 
   const passwordToggleButton = (
     <TouchableOpacity onPress={togglePasswordVisibility}>
@@ -90,20 +89,20 @@ const RegistrationScreen = ({ onHasAccount }) => {
 
           <View style={[styles.innerContainer, styles.inputContainer]}>
             <Input
-              value={login}
+              value={state.login}
               autoFocus={true}
               placeholder="Логін"
               onTextChange={handleLoginChange}
             />
 
             <Input
-              value={email}
+              value={state.email}
               placeholder="Адреса електронної пошти"
               onTextChange={handleEmailChange}
             />
 
             <Input
-              value={password}
+              value={state.password}
               placeholder="Пароль"
               rightButton={passwordToggleButton}
               outerStyles={styles.passwordButton}

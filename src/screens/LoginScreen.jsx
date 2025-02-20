@@ -16,21 +16,34 @@ import { colors } from "../../styles/global";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { CirclePlusSvg } from "../../assets/icons";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("screen");
 
-const LoginScreen = ({ onRegister }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const RegistrationScreen = ({ navigation }) => {
+  const [state, setState] = useState({
+    login: "",
+    email: "",
+    password: "",
+    photo: "",
+  });
   const [isPasswordHidden, setIsPasswordHidden] = useState(true);
 
+  const handlePhotoUpload = useCallback(async () => {
+    console.log("Upload photo");
+  }, []);
+
+  const handleLoginChange = useCallback((value) => {
+    setState((prev) => ({ ...prev, login: value }));
+  }, []);
+
   const handleEmailChange = useCallback((value) => {
-    setEmail(value);
+    setState((prev) => ({ ...prev, email: value }));
   }, []);
 
   const handlePasswordChange = useCallback((value) => {
-    if (value.length < 20) {
-      setPassword(value);
+    if (value.length <= 20) {
+      setState((prev) => ({ ...prev, password: value }));
     }
   }, []);
 
@@ -38,14 +51,18 @@ const LoginScreen = ({ onRegister }) => {
     setIsPasswordHidden((prev) => !prev);
   }, []);
 
-  const onLogin = useCallback(async () => {
-    console.log("login");
-    console.log(email, password);
-  }, [email, password]);
+  const onRegister = useCallback(async () => {
+    console.log("register");
+    console.log(state);
+  }, [state]);
 
   const onSignUp = useCallback(() => {
-    onRegister();
-  }, [onRegister]);
+    navigation.navigate("Login");
+  }, [navigation]);
+
+  // const onSignUp = useCallback(() => {
+  //   navigation.navigate("Login");
+  // }, []);
 
   const passwordToggleButton = (
     <TouchableOpacity onPress={togglePasswordVisibility}>
@@ -56,7 +73,7 @@ const LoginScreen = ({ onRegister }) => {
   );
 
   return (
-    <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
       <Image
         source={require("../../assets/images/bg_native.png")}
         resizeMode="cover"
@@ -67,18 +84,30 @@ const LoginScreen = ({ onRegister }) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Увійти</Text>
+          <View style={styles.photoContainer}>
+            <Pressable onPress={handlePhotoUpload} style={styles.circlePlus}>
+              <CirclePlusSvg />
+            </Pressable>
+          </View>
+
+          <Text style={styles.title}>Реєстрація</Text>
 
           <View style={[styles.innerContainer, styles.inputContainer]}>
             <Input
-              value={email}
+              value={state.login}
               autoFocus={true}
+              placeholder="Логін"
+              onTextChange={handleLoginChange}
+            />
+
+            <Input
+              value={state.email}
               placeholder="Адреса електронної пошти"
               onTextChange={handleEmailChange}
             />
 
             <Input
-              value={password}
+              value={state.password}
               placeholder="Пароль"
               rightButton={passwordToggleButton}
               outerStyles={styles.passwordButton}
@@ -88,20 +117,18 @@ const LoginScreen = ({ onRegister }) => {
           </View>
 
           <View style={[styles.innerContainer, styles.buttonContainer]}>
-            <Button onPress={onLogin}>
+            <Button onPress={onRegister}>
               <Text style={[styles.baseText, styles.loginButtonText]}>
-                Увійти
+                Зареєструватися
               </Text>
             </Button>
 
             <View style={styles.signUpContainer}>
-              <Text style={[styles.baseText, styles.infoText]}>
-                Немає акаунту?
+              <Text style={[styles.baseText, styles.passwordButtonText]}>
+                Вже є акаунт?{" "}
               </Text>
               <TouchableOpacity onPress={onSignUp}>
-                <Text style={[styles.baseText, styles.signUpText]}>
-                  {" Зареєструватися"}
-                </Text>
+                <Text style={[styles.baseText, styles.signUpText]}>Увійти</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -111,7 +138,7 @@ const LoginScreen = ({ onRegister }) => {
   );
 };
 
-export default LoginScreen;
+export default RegistrationScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -137,12 +164,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: SCREEN_WIDTH,
-    height: "55%",
+    height: "67.61%",
     backgroundColor: colors.white,
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     paddingHorizontal: 16,
-    paddingTop: 32,
+    paddingTop: 92,
   },
   title: {
     fontSize: 30,
@@ -175,7 +202,25 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     color: colors.blue,
   },
-  infoText: {
-    color: colors.blue,
+  photoContainer: {
+    position: "absolute",
+    top: -60,
+    height: 120,
+    width: 120,
+    backgroundColor: colors.light_gray,
+    borderRadius: 16,
+    alignSelf: "center",
+  },
+  circlePlus: {
+    position: "absolute",
+    right: -12.5,
+    bottom: 14,
+    height: 25,
+    width: 25,
+  },
+  photo: {
+    width: 120,
+    height: 120,
+    borderRadius: 16,
   },
 });
