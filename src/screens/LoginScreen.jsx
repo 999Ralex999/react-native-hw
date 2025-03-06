@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,135 +10,131 @@ import {
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ActivityIndicator,
+  TouchableWithoutFeedback,
 } from "react-native";
 
 import { colors } from "../../styles/global";
 
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { CirclePlusSvg } from "../../assets/icons";
+
+import { useSelector, useDispatch } from "react-redux";
+import { selectIsLoading, selectError } from "../redux/user/userSelectors";
+import { loginUser } from "../redux/user/userOperations";
+import { resetError } from "../redux/user/userSlice";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("screen");
 
-const RegistrationScreen = ({ navigation }) => {
-  const [state, setState] = useState({
-    login: "",
-    email: "",
-    password: "",
-    photo: "",
-  });
-  const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(true);
+  const dispatch = useDispatch();
 
-  const handlePhotoUpload = useCallback(async () => {
-    console.log("Upload photo");
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
+
+  console.log(isLoading);
+
+  useEffect(() => {
+    dispatch(resetError());
   }, []);
 
-  const handleLoginChange = useCallback((value) => {
-    setState((prev) => ({ ...prev, login: value }));
-  }, []);
+  const handleEmailChange = (value) => {
+    setEmail(value);
+  };
 
-  const handleEmailChange = useCallback((value) => {
-    setState((prev) => ({ ...prev, email: value }));
-  }, []);
-
-  const handlePasswordChange = useCallback((value) => {
-    if (value.length <= 20) {
-      setState((prev) => ({ ...prev, password: value }));
+  const handlePasswordChange = (value) => {
+    if (value.length < 20) {
+      setPassword(value);
     }
-  }, []);
+  };
 
-  const togglePasswordVisibility = useCallback(() => {
-    setIsPasswordHidden((prev) => !prev);
-  }, []);
+  const showPassword = () => {
+    setIsPasswordVisible((prev) => !prev);
+  };
 
-  const onRegister = useCallback(async () => {
-    console.log("register");
-    console.log(state);
-  }, [state]);
+  const onLogin = async () => {
+    console.log("login");
+    console.log(email, password);
+    dispatch(loginUser({ email, password }));
+  };
 
-  const onSignUp = useCallback(() => {
-    navigation.navigate("Login");
-  }, [navigation]);
+  const onSignUp = () => {
+    navigation.navigate("Registration");
+  };
 
-  // const onSignUp = useCallback(() => {
-  //   navigation.navigate("Login");
-  // }, []);
-
-  const passwordToggleButton = (
-    <TouchableOpacity onPress={togglePasswordVisibility}>
-      <Text style={[styles.baseText, styles.passwordButtonText]}>
-        {isPasswordHidden ? "Показати" : "Сховати"}
-      </Text>
+  const showButton = (
+    <TouchableOpacity onPress={showPassword}>
+      <Text style={[styles.baseText, styles.passwordButtonText]}>Показати</Text>
     </TouchableOpacity>
   );
 
   return (
-    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
-      <Image
-        source={require("../../assets/images/bg_native.png")}
-        resizeMode="cover"
-        style={styles.image}
-      />
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.formContainer}>
-          <View style={styles.photoContainer}>
-            <Pressable onPress={handlePhotoUpload} style={styles.circlePlus}>
-              <CirclePlusSvg />
-            </Pressable>
-          </View>
+    <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+      <>
+        <Image
+          source={require("../../assets/images/bg_native.png")}
+          resizeMode="cover"
+          style={styles.image}
+        />
 
-          <Text style={styles.title}>Реєстрація</Text>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+        >
+          <View style={styles.formContainer}>
+            <Text style={styles.title}>Увійти</Text>
 
-          <View style={[styles.innerContainer, styles.inputContainer]}>
-            <Input
-              value={state.login}
-              autoFocus={true}
-              placeholder="Логін"
-              onTextChange={handleLoginChange}
-            />
+            <View style={[styles.innerContainer, styles.inputContainer]}>
+              <Input
+                value={email}
+                autofocus={true}
+                placeholder="Адреса електронної пошти"
+                onTextChange={handleEmailChange}
+              />
 
-            <Input
-              value={state.email}
-              placeholder="Адреса електронної пошти"
-              onTextChange={handleEmailChange}
-            />
+              <Input
+                value={password}
+                placeholder="Пароль"
+                rightButton={showButton}
+                outerStyles={styles.passwordButton}
+                onTextChange={handlePasswordChange}
+                secureTextEntry={isPasswordVisible}
+              />
+            </View>
 
-            <Input
-              value={state.password}
-              placeholder="Пароль"
-              rightButton={passwordToggleButton}
-              outerStyles={styles.passwordButton}
-              onTextChange={handlePasswordChange}
-              secureTextEntry={isPasswordHidden}
-            />
-          </View>
+            <View style={[styles.innerContainer, styles.buttonContainer]}>
+              {isLoading ? (
+                <ActivityIndicator size="large" />
+              ) : (
+                <Button onPress={onLogin}>
+                  <Text style={[styles.baseText, styles.loginButtonText]}>
+                    Увійти
+                  </Text>
+                </Button>
+              )}
 
-          <View style={[styles.innerContainer, styles.buttonContainer]}>
-            <Button onPress={onRegister}>
-              <Text style={[styles.baseText, styles.loginButtonText]}>
-                Зареєструватися
-              </Text>
-            </Button>
+              {error && <Text style={styles.errorText}>{error}</Text>}
 
-            <View style={styles.signUpContainer}>
-              <Text style={[styles.baseText, styles.passwordButtonText]}>
-                Вже є акаунт?{" "}
-              </Text>
-              <TouchableOpacity onPress={onSignUp}>
-                <Text style={[styles.baseText, styles.signUpText]}>Увійти</Text>
-              </TouchableOpacity>
+              <View style={styles.signUpContainer}>
+                <Text style={[styles.baseText, styles.passwordButtonText]}>
+                  Немає акаунту?
+                  <TouchableWithoutFeedback onPress={onSignUp}>
+                    <Text style={styles.signUpText}> Зареєструватися</Text>
+                  </TouchableWithoutFeedback>
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </>
     </Pressable>
   );
 };
 
-export default RegistrationScreen;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -164,12 +160,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: SCREEN_WIDTH,
-    height: "67.61%",
+    height: "55%",
     backgroundColor: colors.white,
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     paddingHorizontal: 16,
-    paddingTop: 92,
+    paddingTop: 32,
   },
   title: {
     fontSize: 30,
@@ -200,27 +196,9 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     textDecorationLine: "underline",
-    color: colors.blue,
   },
-  photoContainer: {
-    position: "absolute",
-    top: -60,
-    height: 120,
-    width: 120,
-    backgroundColor: colors.light_gray,
-    borderRadius: 16,
-    alignSelf: "center",
-  },
-  circlePlus: {
-    position: "absolute",
-    right: -12.5,
-    bottom: 14,
-    height: 25,
-    width: 25,
-  },
-  photo: {
-    width: 120,
-    height: 120,
-    borderRadius: 16,
+  errorText: {
+    color: colors.red,
+    textAlign: "center",
   },
 });
