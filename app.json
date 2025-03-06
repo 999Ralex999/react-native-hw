@@ -20,16 +20,23 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.homework.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "experiments": {
       "baseUrl": "/goit-react-hw-"
     },
-    "plugins": ["expo-font"],
+    "plugins": [
+      "expo-font"
+    ],
     "extra": {
       "eas": {
         "projectId": "2c3476a2-228d-48f8-b488-61334f68f9c0"
